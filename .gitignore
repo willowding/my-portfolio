@@ -48,9 +48,37 @@ next-env.d.ts
 # os
 Thumbs.db
 
+# logs
+*.log
+
+# Heavy brand assets (PDFs > 5MB) — keep on local / CDN, not git
+/public/brands/
+/public/frame-preview/
+
+# Dev / scratch artifacts — never ship
+/_patch.py
+/_t.py
+/_p10c.txt
+/_p11.txt
+/_p7_cjk.txt
+/_p_names.txt
+/_p_dict_*.txt
+/check-status.js
+/probe-titles.js
+/preview-full-page.html
+/preview-storage.html
+/data/fix.ps1
+/data/profile_copy.txt
+/deploy-steps.txt
+/setup-brand-pdfs.ps1
+
+# Python caches
+/.patches/__pycache__/
+*.pyc
+
+# Standalone Next.js output
+/.next/standalone/
+
 # data files (large / runtime)
 /data/*.json
 !/data/*.json.bak
-
-# logs
-*.log
