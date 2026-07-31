@@ -1,0 +1,1851 @@
+﻿@import "tailwindcss";
+
+/* =========================================================
+   Willow Ding · 设计 token
+   参考：haleypark.design (墨绿 hero block)、ericazoelee.com
+   配色：暖白底 + 近黑文字 + 单一墨绿色块（Hero 区）
+   字体：Cormorant Garamond 全局衬线（中文回退宋体）
+   ========================================================= */
+
+@theme {
+  /* palette — haleypark-aligned */
+  --color-bg: #faf9f7;                /* warm off-white */
+  --color-bg-soft: #f4f2ed;           /* slightly darker, for cards */
+  --color-ink: #1a1a1a;               /* near-black */
+  --color-ink-soft: #6b6b6b;
+  --color-rule: #e0ddd8;
+  --color-rule-soft: color-mix(in srgb, var(--color-rule) 55%, transparent);
+  --color-accent: #2d4a3e;            /* 深绿 haleypark green */
+  --color-accent-soft: #6f7a6e;
+  --color-accent-bg: #2d4a3e;         /* 墨绿色块背景，与 accent 同色 */
+  --color-on-accent: #faf9f7;         /* 墨绿底上的文字色 */
+
+/* type — 中文回退链：思源宋体 → 宋体 → 系统 serif → Cormorant
+   Cormorant 已通过 layout.tsx 的 next/font/google 注入为 --font-cormorant */
+  --font-serif: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  --font-sans:  ui-sans-serif, system-ui, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* sizing */
+  --container-narrow: 980px;
+  --container-wide:   1320px;
+
+  /* nav safe area —— 顶部固定导航高度（包含 padding + 底部藤蔓线）
+     = padding-top 1.1rem + 文字高度(~1.05rem) + padding-bottom 2.1rem + 藤蔓底 0.3rem + 藤蔓 22px ≈ 5.95rem
+     圆整到 6.5rem 留 0.5rem 呼吸空间。 */
+  --nav-height: 6.5rem;
+}
+
+/* ---------------------------------------------------------
+   全局衬线字体（Cormorant）
+   --------------------------------------------------------- */
+html, body {
+  font-family: var(--font-serif);
+  font-feature-settings: "liga" 1, "kern" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 全站统一：锚点跳转 / 滚动定位时，给 fixed nav 留出空间，
+   避免目标 section 的内容被 nav 盖住。 */
+html {
+  scroll-padding-top: calc(var(--nav-height) + 1rem);
+}
+
+html[lang="zh"] h1,
+html[lang="zh"] h2,
+html[lang="zh"] h3,
+html[lang="zh"] h4 {
+  font-family: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+}
+
+/* ---------------------------------------------------------
+   基础排版
+   --------------------------------------------------------- */
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-rule);
+  transition: border-color 200ms ease;
+}
+a:hover { border-bottom-color: var(--color-accent); }
+
+/* works-row-head 当渲染为 <a> 时不能保留默认下划线 */
+.works-row-head {
+  border-bottom: none !important;
+}
+.works-row-head:hover { border-bottom-color: transparent !important; }
+
+.inline-link {
+  color: var(--color-accent);
+  border-bottom: 1px solid var(--color-accent-soft);
+}
+.inline-link:hover {
+  border-bottom-color: var(--color-accent);
+  background: linear-gradient(transparent 60%, color-mix(in srgb, var(--color-accent) 14%, transparent) 0);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+  margin: 2.5rem 0;
+}
+
+/* ---------------------------------------------------------
+   容器 / 排版规范（新增元素必须遵守，存量元素逐步收敛）
+
+   1. 内容容器：子页统一用 .container-narrow（max-width: 980px, padding 0 2rem）。
+      所有页面正文、章节标题、子标题、列表项 都从 .container-narrow 的左 padding 开始。
+      不要再给页面级元素加 max-width / margin: 0 auto，会导致打开瞬间宽度"骤变"。
+
+   2. 字号 4 的倍数档位（rem = 16px 基准）：
+        0.75rem = 12px   正文辅文 / 标签
+        0.875rem = 14px  caption（次级说明）
+        1rem = 16px      正文
+        1.25rem = 20px   小标题
+        1.5rem = 24px    章节小标题
+        2rem = 32px      章节标题
+        2.5rem = 40px    页面 H1
+        3rem = 48px      大型 metric 数字
+      历史值 0.72 / 0.78 / 0.85 / 0.95 / 0.97 / 1.02 / 1.05 / 1.4 / 1.55 / 1.6 等不合 4 倍数，
+      新加元素不要再用，已有元素逐步收敛。
+
+   3. 间距 4 的倍数（gap / padding / margin）：
+        0.25 / 0.5 / 0.75 / 1 / 1.25 / 1.5 / 2 / 2.5 / 3 / 4 / 5 / 6 rem。
+      排版行高例外（1.65 / 1.7 / 1.75 不动）。
+
+   4. 子页标题到 nav 距离：见 .section 规则下方注释。
+
+   5. 例外（不强求 4 倍数）：
+      - 行高（1.65 / 1.7 / 1.75 ...）保留为衬线字体节奏。
+      - clamp() 的 viewport 项，保留响应式缩放。
+      - 0.625rem（10px）作为移动端响应式"半档"，与 1.25rem / 0.75rem 等倍数关系。
+   --------------------------------------------------------- */
+.container-narrow {
+  max-width: var(--container-narrow);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+.container-wide {
+  max-width: var(--container-wide);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ---------------------------------------------------------
+   排印修饰
+   --------------------------------------------------------- */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.display-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(2.4rem, 5.4vw, 3.6rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 3.4vw, 2.8rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--color-accent);
+}
+
+.lead-text {
+  font-family: var(--font-serif);
+  font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+  line-height: 1.55;
+  color: var(--color-ink);
+  font-weight: 400;
+}
+
+.muted { color: var(--color-ink-soft); }
+.italic-serif { font-style: italic; }
+
+/* role pill — 「产品助理[[实习]]」里的 [[实习]] 标记（圆角矩形 chip） */
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.72rem;        /* 比 role 标题小一档 */
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--color-on-accent);
+  background: var(--color-accent-bg);
+  padding: 0.1rem 0.5rem;
+  margin-left: 0.5rem;
+  border-radius: 4px;
+  vertical-align: middle;
+  line-height: 1.2;
+  transform: translateY(-1px);   /* 与中文行视觉对齐 */
+}
+mark.pill {
+  background: transparent;
+  color: var(--color-accent);
+  font-style: italic;
+  font-family: var(--font-serif);
+}
+
+/* 工作经历：logo 在左（小尺寸）+ 主体在右 */
+.exp-row {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 1.25rem;
+  padding: 2.25rem 0;
+  border-top: 1px solid var(--color-rule);
+  align-items: start;
+}
+.exp-row:last-child { border-bottom: 1px solid var(--color-rule); }
+
+/* logo 容器：圆角矩形 + 品牌色细边 */
+.exp-logo {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: var(--color-bg);
+  border: 1px solid var(--color-accent);
+  border-radius: 10px;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+  overflow: hidden;
+}
+.exp-logo:hover {
+  transform: translateY(-1px);
+}
+/* img 默认覆盖 monogram；broken 时由浏览器内置 fallback 显示 */
+.exp-logo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* cover 模式：图片撑满容器，4 角被裁 */
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  z-index: 1;
+}
+/* monogram fallback：永远渲染，缺图时显示 */
+.exp-logo-monogram {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 1.5rem;
+  color: var(--color-accent);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  user-select: none;
+  z-index: 0;
+}
+
+.exp-body { min-width: 0; }
+
+/* 公司名 + 日期行 */
+.exp-company-wrap {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.55rem;
+}
+
+/* 公司名作为视觉锚点 */
+.exp-company {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(1.2rem, 2.4vw, 1.65rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+.exp-period {
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--color-accent-soft);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+}
+
+/* 副信息行：角色 + 地点 */
+.exp-meta-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.1rem;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--color-ink);
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+/* 角色 + 地点 容器 */
+.exp-role {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-style: normal;
+  color: var(--color-ink);
+}
+/* 自然格式的角色文字，无 pill 样式 */
+.exp-role .role-pill {
+  font-family: inherit;
+  font-style: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+  line-height: inherit;
+  display: inline;
+  vertical-align: baseline;
+  letter-spacing: inherit;
+}
+.exp-meta-sep {
+  color: var(--color-accent);
+  opacity: 0.7;
+  user-select: none;
+  font-size: 0.85rem;
+  padding: 0 0.1rem;
+}
+.exp-meta-loc {
+  font-family: var(--font-serif);
+  font-style: normal;
+  font-size: 0.95rem;
+  color: var(--color-ink);
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 640px) {
+  .exp-row { grid-template-columns: 40px 1fr; gap: 0.85rem; padding: 1.5rem 0; }
+  .exp-logo { width: 40px; height: 40px; }
+  .exp-head { flex-direction: column; gap: 0.25rem; }
+  .exp-period { font-size: 0.72rem; }
+}
+
+/* 移动端：日期折到下行，logo 缩小 */
+@media (max-width: 640px) {
+  .exp-row { grid-template-columns: 48px 1fr; gap: 0.85rem; padding: 1.5rem 0; }
+  .exp-logo { width: 48px; height: 48px; padding: 6px; border-radius: 6px; }
+  .exp-meta-row { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+  .exp-period { margin-left: 0; }
+}
+
+/* 项目卡片标题 */
+.proj-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* ---------------------------------------------------------
+   顶部导航
+   --------------------------------------------------------- */
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* 底部 padding 比顶部多 1rem，给下方衬线让出空间，形成对称的"线间区" */
+  padding: 1rem 2rem 2rem;
+  z-index: 60;
+  pointer-events: none;
+}
+.site-nav > * { pointer-events: auto; }
+
+/* nav 古籍衬线 —— 中世纪信笺的藤蔓纹饰（vine flourish）：
+   - inline SVG（JSX）：左藤蔓蜿蜒 + 中央菱形锚点 + 右藤蔓镜像
+   - 位于 nav 内部 padding 之内，让 nav 文字竖直居中于"顶沿"与"藤蔓之间"
+   - 两端距离 nav 边各留 1.8rem，避开 logo 与 EN 按钮外缘
+   - 颜色：currentColor 跟随 on-dark 自动反色
+   - preserveAspectRatio="none" 让藤蔓横向铺满 nav 宽度 */
+.nav-rule {
+  position: absolute;
+  left: 1.8rem;
+  right: 1.8rem;
+  /* 让文字到 nav 顶 ≈ 到藤蔓的距离：
+     padding-top 1.1rem (17.6px) + 文字-box 顶部偏移 ≈ 21px
+     bottom: 0.3rem + 藤蔓 SVG 自身 22px 高度 → 文字底到藤蔓 ≈ 11.5px
+     配合 21px 距顶，已基本对称。 */
+  bottom: 0.3rem;
+  width: calc(100% - 3.6rem);
+  height: 22px;
+  pointer-events: none;
+  color: var(--color-rule);
+  opacity: 0.7;
+  transition: color 240ms ease, opacity 240ms ease;
+  display: block;
+}
+.site-nav.on-dark .nav-rule {
+  color: color-mix(in srgb, var(--color-on-accent) 80%, transparent);
+  opacity: 0.85;
+}
+@media (max-width: 640px) {
+  .nav-rule {
+    left: 1.2rem;
+    right: 1.2rem;
+    bottom: 0.4rem;
+    width: calc(100% - 2.4rem);
+    height: 18px;
+  }
+}
+
+/* 左上：柳叶 logo */
+.leaf-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  color: var(--color-accent);
+  border: none;
+  background: transparent;
+  cursor: url("/cursor/hand.png") 1 1, pointer;
+  padding: 0.25rem 0;
+  transition: opacity 200ms ease;
+}
+.leaf-logo:hover { opacity: 0.75; border: none; }
+.leaf-logo svg { display: block; }
+
+/* 右上：nav links + 语言切换 */
+.leaf-nav-cluster {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.nav-link {
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  border: none;
+  background: transparent;
+  cursor: url("/cursor/hand.png") 1 1, pointer;
+  letter-spacing: 0.02em;
+  transition: opacity 200ms ease;
+}
+.nav-link:hover { opacity: 0.7; border: none; }
+
+/* lang-switch —— 极简斜体小标（与 logo 的 serif italic 呼应）：
+   不抢戏、不现代化；后续英文版做完可以切换到正式按钮样式。 */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  background: transparent;
+}
+.lang-switch a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  padding: 0.25rem 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  line-height: 1;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  opacity: 0.75;
+  transition: opacity 200ms ease;
+}
+.lang-switch a:hover { opacity: 1; }
+.lang-switch .sep { color: var(--color-rule); }
+
+/* nav 在深色 hero 上的反色（通过父 .on-dark 状态切换） */
+.site-nav.on-dark .nav-link,
+.site-nav.on-dark .leaf-logo { color: var(--color-on-accent); }
+.site-nav.on-dark .nav-link:hover { color: var(--color-on-accent); opacity: 0.75; }
+.site-nav.on-dark .lang-switch a {
+  color: var(--color-on-accent);
+}
+.site-nav.on-dark .lang-switch a:hover {
+  opacity: 1;
+}
+
+/* 滚动后：NavBar 有背景，覆盖在正文上方 —— 只保留藤蔓纹饰作底线视觉，不加硬边框 */
+.site-nav.scrolled {
+  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.site-nav.scrolled .leaf-logo,
+.site-nav.scrolled .nav-link,
+.site-nav.scrolled .lang-switch a {
+  color: var(--color-accent);
+}
+.site-nav.scrolled .nav-rule {
+  color: var(--color-accent-soft);
+  opacity: 0.85;
+}
+
+/* ---------------------------------------------------------
+   中文姓名 + 拼音（汉字上方，逐一对应）
+   --------------------------------------------------------- */
+.name-block {
+  margin: 0;
+  line-height: 1;
+}
+.name-stack {
+  display: inline-grid;
+  /* 两行共享同一组列宽：每列与一个汉字对齐 */
+  grid-template-rows: auto auto;
+  gap: 0.5rem;
+}
+.name-pinyin,
+.name-chars {
+  display: grid;
+  /* 列宽由汉字驱动，确保拼音与汉字中心对齐 */
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  justify-items: center;
+  align-items: center;
+}
+.name-pinyin {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.42em;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--color-on-accent) 70%, transparent);
+  line-height: 1;
+}
+.name-chars {
+  font-family: "Songti SC", "STSong", "宋体", "Source Han Serif SC", var(--font-cormorant), serif;
+  font-weight: 500;
+  font-size: clamp(2.4rem, 5.4vw, 3.6rem);
+  letter-spacing: 0.04em;
+  line-height: 1.06;
+  color: var(--color-on-accent);
+}
+.pinyin-cell,
+.char-cell {
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------
+   Hero 墨绿色块
+   --------------------------------------------------------- */
+.hero-block {
+  background: var(--color-accent-bg);
+  color: var(--color-on-accent);
+  position: relative;
+  overflow: hidden;
+  /* 单屏落地：Hero 至少填满首屏，去掉 border-bottom（sections 已隐） */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 9rem 0 8rem;
+}
+.hero-block > .container-narrow {
+  width: 100%;
+}
+.hero-block::before {
+  /* 极淡的纵向渐变模拟植物纹理的视觉肌理，不出现图形 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at top right, color-mix(in srgb, var(--color-on-accent) 5%, transparent) 0%, transparent 60%),
+    radial-gradient(ellipse at bottom left, color-mix(in srgb, #000 12%, transparent) 0%, transparent 55%);
+  pointer-events: none;
+}
+.hero-block .eyebrow { color: color-mix(in srgb, var(--color-on-accent) 65%, transparent); }
+.hero-block .accent-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-on-accent);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+.hero-block h1 { color: var(--color-on-accent); }
+.hero-block .lead-text { color: color-mix(in srgb, var(--color-on-accent) 86%, transparent); }
+.hero-block strong { color: var(--color-on-accent); font-weight: 600; }
+.hero-block .contact-strip a { color: var(--color-on-accent); border-bottom: 1px solid color-mix(in srgb, var(--color-on-accent) 40%, transparent); }
+.hero-block .contact-strip a:hover { border-bottom-color: var(--color-on-accent); }
+
+/* 标签横排 */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.tag-list li {
+  font-style: italic;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--color-on-accent) 88%, transparent);
+  padding-right: 1.2rem;
+  position: relative;
+}
+.tag-list li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 0.85em;
+  background: color-mix(in srgb, var(--color-on-accent) 35%, transparent);
+}
+
+/* ---------------------------------------------------------
+   PicReview 详情页 Hero
+   样式已迁移到 src/components/works/PicreviewHero.module.css
+   这里只保留一份 .pr-hero 兼容占位（实际未使用）
+   --------------------------------------------------------- */
+/* .pr-hero {
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 2rem;
+  margin-bottom: 3rem;
+}
+.pr-hero-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.pr-hero-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  line-height: 1.18;
+  letter-spacing: -0.005em;
+  color: var(--color-accent);
+  margin: 0;
+}
+.pr-hero-demo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45em;
+  margin-left: 0.5rem;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-style: normal;
+  font-size: 0.55em;
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 0.08em;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+.pr-hero-demo:hover {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+.pr-hero-demo-arrow {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.05em;
+  transform: translateY(-0.05em);
+  display: inline-block;
+}
+.pr-hero-eyebrow {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  color: var(--color-ink-soft);
+  font-weight: 500;
+  white-space: nowrap;
+  padding-bottom: 0.45rem;
+} */
+
+/* ---------------------------------------------------------
+   section 间距 + 标题排印
+   --------------------------------------------------------- */
+/* 子页标题到导航距离统一规范：nav-height + 1rem。
+   首页 #works.section 单独覆盖为 +2rem，保留其更大的视觉呼吸。
+   新加子页默认吃这条规则，不要再另写 padding-top。 */
+.section {
+  padding-top: calc(var(--nav-height) + 1rem);
+  padding-bottom: 5.5rem;
+}
+#works.section {
+  padding-top: calc(var(--nav-height) + 2rem);
+  padding-bottom: 5.5rem;
+}
+.section + .section { border-top: 1px solid var(--color-rule); }
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid var(--color-accent-soft);
+}
+
+/* ---------------------------------------------------------
+   代表作品列表 (works) —— Brandon Lee 风格的「编号 + 标题 + 标签 + 副标题」横向一行式
+   --------------------------------------------------------- */
+.works-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: works;
+}
+.works-row {
+  border-top: 1px solid var(--color-rule);
+}
+.works-row:last-child {
+  border-bottom: 1px solid var(--color-rule);
+}
+.works-row.is-featured {
+  /* 星标项：左侧加一条小竖线 + 星号更显眼 */
+  box-shadow: inset 3px 0 0 0 var(--color-accent);
+}
+.works-row-head {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 3.8rem 1fr;
+  align-items: start;
+  gap: 1.5rem;
+  padding: 1.6rem 0;
+  background: transparent;
+  border: none;
+  cursor: url("/cursor/hand.png") 1 1, pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  transition: opacity 200ms ease, background 200ms ease;
+}
+.works-row-head:hover { opacity: 0.78; }
+.works-row-head:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+.works-num {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-style: italic;
+  color: var(--color-accent);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  font-feature-settings: "lnum";
+}
+.works-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.works-title-line1 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  row-gap: 0.4rem;
+}
+.works-title-line2 {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+}
+
+/* works-star */
+.works-star {
+  color: var(--color-accent);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.15em;
+  margin-left: 0.1em;
+}
+.works-rule {
+  display: none;
+}
+.works-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+.works-tag-pill {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 6%, transparent);
+}
+.works-meta {
+  display: none; /* 期间已并入 title 第二行，桌面隐藏 */
+}
+.works-role {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--color-ink);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  margin-left: 0.25rem;
+}
+.works-period {
+  /* 用户指定：仅这两行时间用思源宋体 */
+  font-family: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+}
+.works-toggle {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--color-accent);
+  line-height: 1;
+  width: 1.6rem;
+  text-align: center;
+  align-self: center;
+  font-style: italic;
+  opacity: 0.75;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.works-row-head:hover .works-toggle {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+.works-detail {
+  padding: 0.5rem 0 2.5rem 5rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-rule) 55%, transparent);
+  margin-top: -0.3rem;
+  animation: works-detail-in 220ms ease both;
+}
+@keyframes works-detail-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.works-summary {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 1.2rem 0 1rem;
+  color: var(--color-ink);
+}
+.works-link {
+  display: inline-block;
+  margin-top: 1.4rem;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  border-bottom: 1px solid var(--color-accent-soft);
+  padding-bottom: 0.15rem;
+  transition: border-color 200ms ease;
+}
+.works-link:hover { border-color: var(--color-accent); }
+
+/* 详情视图：占位封面（藤蔓环绕 + 中央编号）+ 大标题 + 全文 */
+.works-detail-view {
+  animation: works-detail-in 280ms ease both;
+}
+.works-detail-topbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.works-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--color-accent);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  cursor: url("/cursor/hand.png") 1 1, pointer;
+  transition: opacity 200ms ease;
+  opacity: 0.85;
+}
+.works-back:hover { opacity: 1; }
+.works-detail-head {
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+  padding: 1.6rem 0 1.4rem;
+  margin-bottom: 2.2rem;
+}
+.works-detail-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.9rem, 3.6vw, 2.8rem);
+  line-height: 1.2;
+  letter-spacing: 0.005em;
+  color: var(--color-ink);
+  margin: 0 0 0.9rem;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.works-detail-meta {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+.works-detail-role {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+.works-detail-period {
+  /* 用户指定：仅这两行时间用思源宋体 */
+  font-family: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  color: var(--color-ink-soft);
+}
+
+.works-detail-cover {
+  margin: 0 0 2.4rem;
+  color: var(--color-accent-soft);
+}
+.works-detail-cover svg {
+  width: 100%;
+  height: auto;
+  max-height: 100px;
+  display: block;
+}
+
+.works-detail-summary {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: var(--color-ink);
+  margin: 0 0 2.4rem;
+  font-style: italic;
+}
+
+.metric-row-large {
+  margin: 2.6rem 0 2.4rem;
+  padding: 1.8rem 0;
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+}
+.metric-row-large .metric-value {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-accent);
+  letter-spacing: 0.01em;
+}
+.metric-row-large .metric-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  margin-top: 0.5rem;
+}
+
+.bullet-list-large {
+  margin: 2.4rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-left: 0;
+  list-style: none;
+}
+.bullet-list-large li {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--color-ink);
+  padding-left: 1.5rem;
+  position: relative;
+}
+.bullet-list-large li::before {
+  content: "§";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--color-accent);
+  font-style: italic;
+  font-weight: 700;
+}
+.bullet-list-large strong {
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.01em;
+}
+
+.tech-strip-large {
+  margin: 2.4rem 0 1.4rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--color-rule);
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  line-height: 1.8;
+}
+.tech-strip-large .label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  margin-bottom: 0.5rem;
+}
+
+.works-link-large {
+  margin-top: 1.6rem;
+  font-size: 1rem;
+}
+
+/* 中等以下屏幕：紧凑布局，period 仍跟在标题下方 */
+@media (max-width: 760px) {
+  .works-row-head {
+    grid-template-columns: 2.25rem 1fr;
+    gap: 1rem;
+    padding: 1.25rem 0;
+  }
+  .works-title-line2 { gap: 0.5rem; }
+  .works-period { font-size: 0.625rem; letter-spacing: 0.1em; }
+  .works-detail-view { padding-left: 0; }
+  .works-detail-meta { gap: 0.75rem; }
+  .metric-row-large .metric-value { font-size: 1.75rem; }
+}
+
+/* ---------------------------------------------------------
+   项目卡片 (works - 旧版兼容样式保留)
+   --------------------------------------------------------- */
+.proj {
+  padding: 2rem 0;
+  border-top: 1px solid var(--color-rule);
+}
+.proj:last-child { border-bottom: 1px solid var(--color-rule); }
+.proj-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.proj-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--color-accent-soft);
+  border-radius: 99px;
+}
+
+.metric-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin: 1rem 0 1.2rem;
+}
+.metric-value {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  color: var(--color-accent);
+  line-height: 1;
+}
+.metric-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  margin-top: 0.25rem;
+}
+
+.bullet-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+.bullet-list li {
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+.bullet-list li::before {
+  content: "·";
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-weight: bold;
+}
+
+.tech-strip {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.tech-strip .label {
+  color: var(--color-ink-soft);
+  margin-right: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+}
+.tech-strip .tech-pills {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  vertical-align: middle;
+}
+.tech-strip .tech-pill {
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
+  background: var(--color-bg-soft);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  padding: 0.18rem 0.65rem;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------
+   技能分类
+   --------------------------------------------------------- */
+.skill-group {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 1rem 2rem;
+  padding: 1.2rem 0;
+  border-top: 1px solid var(--color-rule);
+}
+.skill-group:last-child { border-bottom: 1px solid var(--color-rule); }
+.skill-group h4 {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1rem;
+}
+.skill-group .items {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-soft);
+  line-height: 1.7;
+}
+@media (max-width: 640px) {
+  .skill-group { grid-template-columns: 1fr; gap: 0.25rem; }
+}
+
+/* ---------------------------------------------------------
+   Contact 卡片网格（Erica 风格）
+   --------------------------------------------------------- */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+@media (min-width: 720px) {
+  .contact-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.contact-card {
+  display: block;
+  padding: 1.5rem 1rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  background: var(--color-bg);
+  transition: all 200ms ease;
+  border-bottom: 1px solid var(--color-rule); /* override default */
+}
+.contact-card:hover {
+  border-color: var(--color-accent);
+  background: var(--color-bg);
+  transform: translateY(-2px);
+}
+.contact-card .label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  margin-bottom: 0.75rem;
+}
+.contact-card .value {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--color-ink);
+  word-break: break-word;
+}
+
+/* ---------------------------------------------------------
+   Footer
+   --------------------------------------------------------- */
+.site-footer {
+  padding: 3rem 0 2rem;
+  border-top: 1px solid var(--color-rule);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  color: var(--color-ink-soft);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ---------------------------------------------------------
+   prefers-reduced-motion
+   --------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   自定义 cursor（Vintage Floral Christmas Ball · 古典花环缎带）
+   原图 128px，缩到 24×24 后 hotspot 1 1（鼠标尖端）
+   --------------------------------------------------------- */
+html, body {
+  cursor: url("/cursor/arrow.png") 1 1, auto;
+}
+a, button, [role="button"], .works-row-head, label, summary, input, textarea, select {
+  cursor: url("/cursor/hand.png") 1 1, pointer;
+}
+/* 兜底：任何带 onClick / tabIndex（可键盘聚焦）的元素，都按可点击处理。
+   CSS 不直接看到 React 的 onClick，所以这里用 tabIndex>0 与 role=button 作为代理。
+   组件自身也可以显式声明 cursor 压过此条。 */
+[tabindex], [tabIndex] {
+  cursor: url("/cursor/hand.png") 1 1, pointer;
+}
+/* Cursor 全局规范：
+   ── 所有 cursor: 声明都必须使用这两套 url（arrow.png / hand.png）
+   ── 不允许出现裸的 `cursor: pointer` 或 `cursor: default`
+   ── 已读 / 不可点：inherit / auto
+   ── 装饰层（hero ornament / cover / svg）退回 arrow
+*/
+/* TimelineEvents 折叠头 —— CSS Module 把 .te-feature-header 编译成 hash 类名，
+   用属性选择器 [class*="..."] 强制匹配，且通过 div[class*=...] 提高特异性
+   压过模块自身的 cursor: pointer */
+div[class*="te-feature-header"] {
+  cursor: url("/cursor/hand.png") 1 1, pointer !important;
+}
+/* next/link 包装层 + 显式覆盖 nav 内（cursor 不通过继承触达链接，故显式声明） */
+.site-nav, .site-nav *, .nav-link, .leaf-logo, .lang-switch a {
+  cursor: url("/cursor/hand.png") 1 1, pointer;
+}
+.site-nav .nav-rule { cursor: url("/cursor/arrow.png") 1 1, auto; }
+/* 详情视图/详情 cover 是装饰层，cursor 退回默认 arrow */
+.works-detail-cover, .hero-block .hero-ornament, [aria-hidden="true"] svg {
+  cursor: url("/cursor/arrow.png") 1 1, auto;
+}
+/* =========================================================
+   /about 独立页 - Paco 风
+   整段散文、dotted 短信息、Accolades 列表、邮箱大链接
+   ========================================================= */
+.about-main { background: var(--color-bg); }
+
+/* ------- HERO ------- */
+.about-hero {
+  padding: clamp(4rem, 10vw, 8rem) 0 clamp(2rem, 5vw, 4rem);
+}
+.about-hero-greeting {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  line-height: 1.1;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.about-hero-tagline {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--color-ink-soft);
+  margin: 0 0 2.5rem;
+  font-style: italic;
+}
+.about-hero-intro {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  line-height: 1.75;
+  color: var(--color-ink);
+  margin: 0 0 1.5rem;
+  max-width: 38rem;
+  font-weight: 500;
+}
+.about-hero-intro strong {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.about-hero-narrative {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--color-ink);
+  margin: 0;
+  max-width: 38rem;
+}
+.about-hero-narrative p { margin: 0; }
+
+/* ------- 段间分割 ------- */
+.about-rule {
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+  margin: 0 auto;
+  max-width: var(--container-narrow);
+}
+
+/* ------- Short bio (Paco-style dotted list) ------- */
+.about-bio { padding-top: 1rem; padding-bottom: 6rem; }
+.about-bio-dots {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--color-ink-soft);
+}
+.about-bio-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.about-bio-label {
+  font-style: italic;
+  color: var(--color-ink-soft);
+}
+.about-bio-sep {
+  color: var(--color-rule);
+}
+.about-bio-value {
+  color: var(--color-ink);
+}
+.about-bio-value--link {
+  color: var(--color-accent);
+  border-bottom: 1px solid var(--color-accent-soft);
+  transition: border-color 200ms ease;
+}
+.about-bio-value--link:hover {
+  border-bottom-color: var(--color-accent);
+}
+
+/* ------- 段间装饰 (Paco 在 section 间用装饰花) ------- */
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.8rem;
+  text-transform: lowercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-soft);
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-left: 1.5rem;
+}
+.eyebrow::before {
+  content: '\2014';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+}
+
+/* ------- 技能（散文） ------- */
+.about-prose {
+  max-width: 38rem;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--color-ink);
+}
+.about-prose-block {
+  margin: 0 0 1.25rem;
+}
+.about-prose-block:last-child { margin-bottom: 0; }
+.about-prose-label {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.about-prose-block span { color: var(--color-ink); }
+.about-prose-list {
+  color: var(--color-ink-soft);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+.about-prose-chip {
+  white-space: nowrap;
+  display: inline-block;
+}
+
+/* ------- 学业（Paco 风散文） ------- */
+.about-edu-block {
+  max-width: 38rem;
+  font-family: var(--font-serif);
+  margin-top: 1rem;
+}
+.about-edu-school {
+  font-weight: 500;
+  font-size: 1.5rem;
+  color: var(--color-ink);
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.005em;
+}
+.about-edu-meta {
+  font-style: italic;
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+  margin: 0 0 1.25rem;
+  line-height: 1.6;
+}
+.about-edu-narrative {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--color-ink);
+  margin: 0 0 1.25rem;
+}
+.about-edu-notes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.about-edu-notes li {
+  font-size: 0.95rem;
+  color: var(--color-ink);
+  padding-left: 1.25rem;
+  position: relative;
+}
+.about-edu-notes li::before {
+  content: '\2014';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent-soft);
+}
+
+/* ------- Contact footer（Paco 风大邮箱） ------- */
+.about-contact {
+  padding-top: 3rem;
+  padding-bottom: 6rem;
+}
+.about-contact-email {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  letter-spacing: -0.01em;
+  margin: 0 0 1.5rem;
+  line-height: 1.2;
+}
+.about-contact-email a {
+  color: var(--color-ink);
+  border-bottom: 1px solid var(--color-rule);
+  transition: border-color 200ms ease;
+}
+.about-contact-email a:hover {
+  border-bottom-color: var(--color-accent);
+}
+.about-contact-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+.about-contact-links li a {
+  color: var(--color-ink);
+  border-bottom: 1px solid var(--color-rule);
+  transition: border-color 200ms ease;
+}
+.about-contact-links li a:hover {
+  border-bottom-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+@media (max-width: 720px) {
+  .about-hero { padding-top: 3rem; padding-bottom: 1.5rem; }
+  .about-bio { padding-bottom: 4rem; }
+  .about-hero-intro { font-size: 1.125rem; }
+}
+
+/* =========================================================
+   /about — bio section 双栏布局（基本信息左 + 照片右）
+   ========================================================= */
+.about-bio-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 3rem;
+  justify-content: space-between;
+}
+.about-bio-dots {
+  flex: 1;
+  min-width: 0;
+}
+.about-bio-photos {
+  flex-shrink: 0;
+  width: 280px;
+  padding-top: 0.1rem;
+}
+
+/* =========================================================
+   /about Hero — 4 张散落 Polaroid
+   摆法：
+   - 容器是相对定位板，宽 ~520px，高 ~380px
+   - 4 张拍立得 absolute 散落，hover 拉直并上浮
+   - 移动端改 2×2 网格直立摆放
+   ========================================================= */
+.polaroid-board {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  height: 380px;
+  margin: 0 auto 3rem;
+  padding: 30px;
+}
+.about-bio-photos {
+  position: relative;
+  height: 220px;
+}
+.about-bio-photos .polaroid-board__snap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 108px;
+  margin: -58px 0 0 -54px;
+  padding: 7px 7px 0;
+  background: #fffdf8;
+  border-radius: 2px;
+  box-shadow: 0 10px 20px -8px rgba(40,30,10,0.5), 0 3px 6px -2px rgba(40,30,10,0.2);
+  transform: translate(var(--x,0),var(--y,0)) rotate(var(--r,0));
+  transition: transform 0.4s cubic-bezier(0.3,0.9,0.3,1), box-shadow 0.3s ease;
+  cursor: "/cursor/hand.png" 1 1, pointer;
+}
+.about-bio-photos .polaroid-board__snap img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  background: #e9e3d6;
+  filter: sepia(0.06) contrast(1.02);
+}
+.about-bio-photos .polaroid-board__snap figcaption {
+  padding: 6px 3px 9px;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+  line-height: 1.2;
+}
+.about-bio-photos .polaroid-board__snap:nth-child(1) { --x:-88px; --y:-26px; --r:-9deg; }
+.about-bio-photos .polaroid-board__snap:nth-child(2) { --x:34px;  --y:-40px; --r: 6deg; }
+.about-bio-photos .polaroid-board__snap:nth-child(3) { --x:-58px; --y:26px;  --r: 4deg; }
+.about-bio-photos .polaroid-board__snap:nth-child(4) { --x:56px;  --y:14px;  --r:-5deg; }
+.about-bio-photos .polaroid-board__snap:hover,
+.about-bio-photos .polaroid-board__snap:focus-within {
+  transform: translate(var(--x,0),var(--y,0)) rotate(0deg) scale(1.1);
+  box-shadow: 0 20px 32px -12px rgba(40,30,10,0.6), 0 5px 12px -4px rgba(40,30,10,0.28);
+  z-index: 10;
+}
+.about-bio-photos .polaroid-board__snap:focus-within {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+@media (max-width: 720px) {
+  .about-bio-photos {
+    height: auto;
+    width: 100%;
+  }
+  .about-bio-photos .polaroid-board__snap {
+    position: relative;
+    left: auto; top: auto;
+    width: 46%;
+    margin: 0 auto;
+    transform: none !important;
+  }
+  .about-bio-photos .polaroid-board__snap:nth-child(n) { --x:0; --y:0; --r:0; }
+  .about-bio-photos .polaroid-board__snap:hover { transform: scale(1.03) !important; }
+}
+.polaroid-board__snap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 195px;
+  margin: -110px 0 0 -97px;
+  background: #fffdf8;
+  padding: 12px 12px 0;
+  border-radius: 3px;
+  box-shadow: 0 18px 32px -14px rgba(40, 30, 10, 0.55),
+              0 4px 10px -4px rgba(40, 30, 10, 0.25);
+  transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--r, 0));
+  transition: transform 0.4s cubic-bezier(0.3, 0.9, 0.3, 1),
+              box-shadow 0.3s ease,
+              z-index 0s;
+  outline: none;
+  cursor: url("/cursor/hand.png") 1 1, pointer;
+}
+.polaroid-board__snap img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  background: #e9e3d6;
+  filter: sepia(0.08) contrast(1.02);
+}
+.polaroid-board__snap figcaption {
+  padding: 10px 6px 14px;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+  line-height: 1.3;
+}
+.polaroid-board__snap:nth-child(1) {
+  --x: -185px; --y: -55px; --r: -9deg;
+}
+.polaroid-board__snap:nth-child(2) {
+  --x: 60px;   --y: -85px; --r: 7deg;
+}
+.polaroid-board__snap:nth-child(3) {
+  --x: -120px; --y: 55px;  --r: 4deg;
+}
+.polaroid-board__snap:nth-child(4) {
+  --x: 115px;  --y: 30px;  --r: -6deg;
+}
+.polaroid-board__snap:hover,
+.polaroid-board__snap:focus-within {
+  transform: translate(var(--x, 0), var(--y, 0)) rotate(0deg) scale(1.06);
+  box-shadow: 0 32px 52px -16px rgba(40, 30, 10, 0.65),
+              0 8px 16px -6px rgba(40, 30, 10, 0.3);
+  z-index: 10;
+}
+.polaroid-board__snap:focus-within {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+@media (max-width: 720px) {
+  .polaroid-board {
+    height: auto;
+    max-width: 360px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 2rem;
+  }
+  .polaroid-board__snap {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    margin: 0;
+    transform: none !important;
+    box-shadow: 0 10px 20px -10px rgba(40, 30, 10, 0.4);
+  }
+  .polaroid-board__snap:nth-child(n) {
+    --x: 0; --y: 0; --r: 0;
+  }
+  .polaroid-board__snap:hover,
+  .polaroid-board__snap:focus-within {
+    transform: scale(1.02) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .polaroid-board__snap {
+    transition: box-shadow 0.2s ease;
+  }
+  .polaroid-board__snap:hover,
+  .polaroid-board__snap:focus-within {
+    transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--r, 0));
+  }
+}
+
+
+/* ------- 学业 (履歷化排版) ------- */
+.about-edu-school-line {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--color-ink-soft);
+  margin: 0 0 1.25rem;
+  max-width: 38rem;
+}
+
+/* ------- education entry: exp-row style ------- */
+.about-edu-exp-row {
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--color-rule);
+}
+.about-edu-exp-row:last-of-type {
+  border-bottom: 1px solid var(--color-rule);
+}
+.about-edu-exp-body { min-width: 0; }
+.about-edu-exp-headline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.4rem;
+}
+.about-edu-exp-name {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.25rem;
+  color: var(--color-ink);
+  letter-spacing: -0.005em;
+}
+.about-edu-exp-period {
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--color-accent-soft);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.about-edu-exp-meta {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--color-ink-soft);
+}
+
+.about-edu-resume {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: 38rem;
+  border-top: 1px solid var(--color-rule);
+}
+
+.about-edu-resume-row {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-rule-soft);
+  align-items: baseline;
+}
+
+.about-edu-resume-year {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-ink-soft);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.about-edu-resume-event {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--color-ink);
+}
+
+/* ------- hero 内嵌联系方式行（取代「基本信息」section）------- */
+.about-hero-dots {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--color-ink-soft);
+  max-width: 32rem;
+}

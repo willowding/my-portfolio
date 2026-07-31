@@ -1,0 +1,720 @@
+.yt-page {
+  padding-top: calc(var(--nav-height) + 1rem);
+  padding-bottom: 6rem;
+}
+
+/* ---------- Hero ---------- */
+.yt-hero {
+  border-bottom: 1px solid var(--color-accent-soft);
+  padding-bottom: 1.5rem;     /* 24px, 4 倍数 */
+  margin-bottom: 2rem;        /* 32px */
+}
+.yt-hero-meta {
+  margin-bottom: 0.75rem;     /* 12px */
+}
+.yt-period {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;         /* 12px */
+  letter-spacing: 0.1em;
+  color: var(--color-ink-soft);
+}
+.yt-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 2.5rem);  /* 32 / 40px, 4 倍数 */
+  line-height: 1.2;                    /* 1.2 = 排版例外 */
+  letter-spacing: 0;
+  color: var(--color-accent);
+  margin: 0 0 0.5rem;
+}
+.yt-tagline {
+  font-family: var(--font-serif);
+  font-size: 1rem;            /* 16px */
+  color: var(--color-ink-soft);
+  font-style: italic;
+  margin: 0;
+}
+
+/* ---------- Section ---------- */
+.yt-section {
+  padding: 1.5rem 0 2.5rem;   /* 24 / 40, 4 倍数 */
+  border-bottom: 1px solid var(--color-rule);
+}
+.yt-section:last-child { border-bottom: none; }
+
+.yt-section-eyebrow {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 0.875rem;        /* 14px */
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--color-on-accent);
+  background: var(--color-accent-bg);
+  padding: 0.25rem 0.75rem;   /* 4 / 12, 4 倍数 */
+  border-radius: 2px;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+/* ---------- 频道背景 ---------- */
+.yt-context {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;               /* 12px */
+}
+.yt-context p,
+.yt-context div {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.75;          /* 行高例外 */
+  color: var(--color-ink);
+  margin: 0;
+  /* 规范：吃满 .container-narrow (980px)，不缩窄 */
+}
+/* Tag 列表：4 个多语种 hashtag 横向排列，可点击跳 YouTube 搜索 */
+.yt-tag-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;       /* 行 4px / 列 8px，按 4pt 体系 */
+  vertical-align: baseline;
+}
+/* Tag 链接：覆盖全局 a 的常驻 border-bottom + underline，纯色变化呈现 hover */
+.yt-tag-link {
+  color: var(--color-accent);
+  border-bottom: none;       /* 覆盖 globals.css 里 a 的常驻浅灰底线 */
+  text-decoration: none;     /* 移除默认下划线 */
+  font-size: 0.95rem;
+  transition: color 180ms ease;
+}
+.yt-tag-link:hover {
+  color: var(--color-accent-soft);
+  border-bottom: none;
+  text-decoration: none;
+}
+/* 各语种字族（与首页拼音 `dīng shū wén` 一致）：
+   ── 中文：Source Han Serif SC（衬线）
+   ── 日文：Source Han Serif SC（含日文字形）
+   ── 韩文：Noto Serif KR（衬线，与 Source Han Serif 同源）
+   ── 英文：Source Han Serif SC 拉丁字符 italic —— 全局 --font-serif italic，
+           与首页拼音字族完全一致（而非 Cormorant Garamond）。
+   字号统一 0.95rem */
+.yt-tag-han,
+.yt-tag-jp {
+  font-family: var(--font-serif);
+  font-weight: 500;
+}
+.yt-tag-kr {
+  font-family: "Noto Serif KR", var(--font-serif), serif;
+  font-weight: 500;
+}
+.yt-tag-en {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ---------- Metrics ---------- */
+.yt-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;                  /* 16px */
+  margin-bottom: 1.5rem;      /* 24px */
+}
+/* 3 卡布局：04 第二频道数据卡片使用 */
+.yt-metrics-grid-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+/* 第二排 2 卡：每张宽度 = 第一排 2 卡 + 1 gap。
+   用 flex 让两张卡的总宽与上方 4 列等宽网格一致：
+     总宽 = (50% - 0.5rem) + 1rem + (50% - 0.5rem) = 100%
+     每张 = (100% - 1rem) / 2 = 4 列网格中 2 卡 + 1 gap 的宽度 */
+.yt-metrics-grid-2col {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0;
+}
+.yt-metrics-grid-2col > .yt-metric {
+  flex: 0 0 calc((100% - 1rem) / 2);
+}
+/* 第二排的卡各占 2 个 1fr = 第一排 2 卡 + gap 总宽 */
+.yt-metrics-grid-2col > .yt-metric {
+  grid-column: span 2;
+}
+.yt-metric {
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;      /* 16 / 20, 4 倍数 */
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;                /* 8px */
+}
+.yt-metric-value {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;          /* 40px, 4 倍数 */
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-accent);
+  letter-spacing: 0;
+  line-height: 1;             /* 数字例外 */
+}
+.yt-metric-label {
+  font-family: var(--font-serif);
+  font-size: 0.875rem;        /* 14px */
+  color: var(--color-ink-soft);
+  line-height: 1.45;
+}
+
+/* ---------- Before/After ---------- */
+.yt-before-after {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+.yt-before-after-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;                /* 8px */
+}
+.yt-before-after-label {
+  font-family: var(--font-serif);
+  font-size: 0.875rem;        /* 14px */
+  font-style: italic;
+  color: var(--color-ink-soft);
+}
+.yt-before-after-nums {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;               /* 12px */
+  flex-wrap: wrap;
+}
+.yt-before {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;          /* 24px, 4 倍数 */
+  color: var(--color-ink-soft);
+}
+.yt-arrow {
+  font-family: var(--font-serif);
+  color: var(--color-accent);
+  font-size: 1rem;
+}
+.yt-after {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;          /* 24px */
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+/* ---------- 02 恢复路径（4 项动作）· 文本量少, 直接展开 ---------- */
+.yt-work-areas {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;                  /* 24px 行间距, 跟静态 block 阅读节奏 */
+}
+.yt-work-row {
+  border-top: 1px solid var(--color-rule-soft);
+  padding-top: 1rem;             /* 16px */
+}
+.yt-work-row:first-child {
+  border-top-color: transparent;
+  padding-top: 0;
+}
+.yt-work-label-static {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.0625rem;          /* 17px, 跟主体静态小标题同级 */
+  color: var(--color-accent);
+  margin: 0 0 0.5rem;
+}
+.yt-work-body {
+  font-family: var(--font-serif);
+  font-size: 1rem;               /* 16px */
+  line-height: 1.7;
+  color: var(--color-ink);
+  margin: 0;
+}
+.yt-work-body p {
+  margin: 0;
+}
+.yt-work-body p + p {
+  margin-top: 0.4rem;
+}
+.yt-work-body-line {
+  margin: 0;
+}
+.yt-work-body strong {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  color: var(--color-accent);
+  letter-spacing: 0.01em;
+}
+.yt-work-footnote {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;          /* 11px */
+  color: var(--color-ink-muted);
+  opacity: 0.55;
+  margin-left: 0.35em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+.yt-work-label-static {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.0625rem;          /* 17px, 跟主体静态小标题同级 */
+  color: var(--color-accent);
+  margin: 0 0 0.5rem;            /* 8px 与 body 拉开 */
+  letter-spacing: 0.01em;
+}
+.yt-work-body {
+  font-family: var(--font-serif);
+  font-size: 1rem;               /* 16px */
+  line-height: 1.7;
+  color: var(--color-ink);
+  margin: 0;
+}
+.yt-work-body strong {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  color: var(--color-accent);
+  letter-spacing: 0.01em;
+}
+
+/* ---------- 03 阶段成果 — 3a / 3b 子块 ---------- */
+.yt-subblock {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 1.5rem;        /* 24px */
+}
+.yt-subblock + .yt-subblock {
+  border-top: 1px solid var(--color-rule);
+}
+.yt-subblock:first-of-type {
+  padding-top: 0.5rem;        /* 8px */
+}
+.yt-subhead {
+  font-family: var(--font-serif);
+  font-size: 1rem;            /* 16px */
+  font-weight: 600;
+  font-style: italic;
+  color: var(--color-accent);
+  margin: 0;
+}
+.yt-subnote {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;         /* 12px */
+  letter-spacing: 0.05em;
+  color: var(--color-ink-soft);
+  margin: -0.5rem 0 0;
+}
+.yt-metrics-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  max-width: 32rem;           /* 512px, 4 倍数容器 */
+}
+.yt-placeholder {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.875rem;        /* 14px */
+  color: var(--color-ink-soft);
+  border: 1px dashed var(--color-rule);
+  border-radius: 4px;
+  padding: 1rem;              /* 16px */
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+  .yt-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .yt-metrics-grid-3col {
+    grid-template-columns: 1fr;
+  }
+  .yt-before-after {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* ── 01 解密频道卡片 ──────────────────────────────── */
+
+.channel-locked-wrap {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: baseline;
+  position: relative;
+}
+
+.channel-locked-placeholder {
+  display: inline-block;
+  position: relative;
+  padding: 0 0.25rem;         /* 4px, 4 倍数 */
+  background: var(--color-rule);
+  border-radius: 4px;
+  cursor: url("/cursor/hand.png") 1 1, pointer;
+  vertical-align: baseline;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+.channel-locked-placeholder:hover {
+  opacity: 0.75;
+}
+
+.channel-locked-text {
+  display: inline-block;
+  visibility: hidden;
+  font-family: var(--font-serif);
+  font-size: 1em;
+  font-weight: 500;
+  letter-spacing: 0.05em;     /* 8% */
+  white-space: nowrap;
+}
+
+.channel-name-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;              /* 4px */
+  font-family: var(--font-serif);
+  font-size: 1em;
+  font-weight: 500;
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-accent-soft);
+  padding: 0 0.05em;
+  transition: border-color 0.15s, background 0.15s;
+  cursor: url("/cursor/hand.png") 1 1, pointer;
+}
+
+.channel-name-link:hover {
+  border-bottom-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+
+.channel-name-arrow {
+  font-size: 0.75em;
+  opacity: 0.75;
+  margin-left: 0.1em;
+}
+
+.channel-pw-submit {
+  width: 9.5rem;                  /* 152px, 与输入框同宽 */
+  align-self: center;
+  margin-top: 0.125rem;           /* 2px, 进一步压缩, 让密码框与按钮近似贴在一起 */
+  padding: 0.5rem 0.75rem;        /* 8 / 12, 上下与输入框对齐, 左右略宽让"确认"二字居中更稳 */
+  font-family: var(--font-serif);
+  font-size: 0.8125rem;           /* 13px */
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border: none;
+  border-radius: 4px;
+  letter-spacing: 0.15em;
+  transition: opacity 0.15s ease-out, transform 0.1s ease-out, background-color 0.15s;
+}
+
+.channel-pw-submit:hover {
+  opacity: 0.875;
+}
+
+.channel-pw-submit:active {
+  transform: translateY(1px);
+}
+
+.channel-pw-submit[data-shake="true"] {
+  /* 错密码时短暂闪一下, 反馈给用户 */
+  background-color: #b34a3a;
+}
+
+.channel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 8, 20, 0.56);
+  backdrop-filter: blur(4px);  /* 4px */
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: overlay-in 0.2s ease;
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.channel-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-rule);
+  border-radius: 12px;
+  padding: 1.5rem 1.5rem 1.25rem;
+  width: 100%;
+  max-width: 16rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  animation: card-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .channel-card { animation: none; }
+}
+
+.channel-lock-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: var(--color-ink-soft);
+}
+
+.channel-lock-art {
+  width: 100%;
+  height: 100%;
+}
+
+.channel-pw-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.375rem;                /* 6px, 比 8px 更紧凑 */
+  width: 100%;
+}
+
+.channel-pw-input {
+  width: 11.5rem;                /* 184px, 足以装下 "Enter password" placeholder */
+  align-self: center;
+  box-sizing: border-box;
+  padding: 0.5rem 0.5rem;        /* 8 / 8, 4 倍数, 内边距也收一些 */
+  font-family: "Cormorant Garamond", var(--font-serif);
+  font-size: 1.125rem;           /* 18px, 比 22px 略缩, 给 placeholder 留出横向空间 */
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.1em;         /* 字距收紧, 避免 "Enter password" 被裁 */
+  background: var(--color-bg);
+  /* 1px 实边但视觉细: 用 --color-rule-soft (55% 透明度) 在所有 DPI 都可见 */
+  border: 1px solid var(--color-rule-soft);
+  border-radius: 4px;
+  color: var(--color-ink);
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+
+.channel-pw-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-bg);
+}
+
+.channel-pw-input::placeholder {
+  /* placeholder 走编辑性而非装饰: 非 italic + 衬线 + 65% 透明, 不抢主体字符节奏 */
+  color: color-mix(in srgb, var(--color-ink-soft) 65%, transparent);
+  font-family: var(--font-serif);
+  font-style: normal;
+  letter-spacing: 0.08em;
+}
+
+.channel-pw-hint {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.875rem);  /* 浮在卡顶部上方 14px, 与密码窗口拉开距离 */
+  transform: translateX(-50%) translateY(4px);
+  font-family: var(--font-serif);  /* 思源宋体, 与频道运营字体一致 */
+  font-size: 0.8125rem;           /* 13px, 跟密码框输入字视觉同量级 */
+  font-style: normal;
+  font-weight: 500;
+  padding: 0.375rem 0.875rem;      /* 6 / 14 */
+  background: var(--color-bg);    /* 白纸底, 跟卡同色, 像纸片从卡里飘出 */
+  color: var(--color-accent);      /* haleypark green #2d4a3e, 频道运营字体颜色 */
+  border: 1px solid var(--color-accent-soft);
+  border-radius: 999px;           /* 全圆气泡 */
+  white-space: nowrap;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease-out, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+  box-shadow: 0 2px 6px rgba(45, 74, 62, 0.08);  /* 极轻投影, 跟卡片节奏一致 */
+}
+
+/* 气泡小尾巴: 指向卡中心, 与气泡边框同色 */
+.channel-pw-hint::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  transform: translateX(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: var(--color-bg);
+  border-right: 1px solid var(--color-accent-soft);
+  border-bottom: 1px solid var(--color-accent-soft);
+}
+
+.channel-pw-hint.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.channel-pw-hint.hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(4px);
+  visibility: hidden;
+}
+
+.channel-close {
+  position: absolute;
+  top: 0.5rem;                  /* 卡内 8px, 不再悬空外卡 */
+  right: 0.625rem;               /* 10px, 对齐卡 padding 节奏 */
+  background: none;
+  border: none;
+  color: var(--color-ink-soft);
+  font-size: 1.25rem;            /* 20px, 从 24 缩, 不再喧宾夺主 */
+  padding: 0.25rem;              /* 4px 触控区 */
+  line-height: 1;
+  border-radius: 4px;
+  transition: color 0.15s, transform 0.1s ease-out, background-color 0.15s;
+}
+
+.channel-close:hover {
+  color: var(--color-ink);
+  background-color: var(--color-rule-soft);
+}
+
+.channel-close:active {
+  transform: translateY(1px);
+}
+
+.channel-card-wrap {
+  position: relative;
+}
+
+/* ========== §6 右侧悬浮目录栏 ========== */
+.yt-toc {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .yt-toc {
+    display: block;
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 1.8rem;
+    left: auto;
+    width: auto;
+    max-width: 220px;
+    text-align: center;
+    max-height: calc(100vh - var(--nav-height) - 3rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-rule) transparent;
+  }
+  .yt-toc::-webkit-scrollbar {
+    width: 4px;
+  }
+  .yt-toc::-webkit-scrollbar-thumb {
+    background: var(--color-rule);
+    border-radius: 2px;
+  }
+}
+
+.yt-toc-inner {
+  padding: 0.5rem 0.25rem;
+}
+
+.yt-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.yt-toc-item {
+  margin: 0;
+  padding: 0;
+}
+
+.yt-toc-link {
+  display: block;
+  padding: 0.1rem 0;
+  text-decoration: none;
+  color: var(--color-ink-soft);
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-align: center;
+  transition: color 0.4s ease, opacity 0.4s ease;
+  opacity: 0.55;
+}
+
+.yt-toc-link:hover {
+  color: var(--color-ink);
+  opacity: 0.9;
+}
+
+.yt-toc-label {
+  font-style: italic;
+}
+
+.yt-toc-link-active {
+  color: var(--color-accent);
+  opacity: 1;
+  font-weight: 500;
+}
+
+/* ── 联系方式解锁（手机 / 微信） ──────────────────────────────── */
+
+.contact-locked-value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  vertical-align: baseline;
+  font-family: var(--font-serif);
+  color: var(--color-ink);
+}
+
+.contact-locked-text {
+  font-style: normal;
+  letter-spacing: 0;
+}
+
+.contact-locked-copy {
+  background: none;
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  padding: 0.05rem 0.4rem;
+  font-family: var(--font-serif);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--color-ink-soft);
+  cursor: url("/cursor/hand.png") 1 1, pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.contact-locked-copy:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent-soft);
+}
+
+.contact-locked-copy:active {
+  transform: translateY(1px);
+}

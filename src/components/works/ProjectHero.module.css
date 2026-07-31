@@ -1,0 +1,78 @@
+.ph-hero {
+  padding-top: 1.4rem;
+  padding-bottom: 1.6rem;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--color-accent-soft);
+}
+
+.ph-hero-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.4rem;
+  flex-wrap: nowrap;
+}
+
+.ph-hero-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  line-height: 1.18;
+  letter-spacing: -0.005em;
+  color: var(--color-accent);
+  margin: 0;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ph-hero-demo {
+  margin-left: 0.5rem;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-style: normal;
+  font-size: 0.55em;
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: color 200ms ease;
+  white-space: nowrap;
+}
+.ph-hero-demo:hover {
+  color: var(--color-accent);
+}
+
+.ph-hero-eyebrow {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  color: var(--color-ink-soft);
+  font-weight: 500;
+  white-space: nowrap;
+  padding-bottom: 0.3rem;
+  flex-shrink: 0;
+}
+
+.ph-hero-sub {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+  margin: 0.6rem 0 0;
+  line-height: 1.5;
+}
+
+.ph-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  margin-top: 0.75rem;
+}
+
+.ph-hero-meta-dot {
+  color: color-mix(in srgb, var(--color-ink-soft) 40%, transparent);
+}
