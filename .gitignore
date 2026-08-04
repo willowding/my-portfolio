@@ -94,6 +94,3 @@ Thumbs.db
 # Standalone Next.js output
 /.next/standalone/
 
-# data files (large / runtime)
-/data/*.json
-!/data/*.json.bak
