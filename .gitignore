@@ -71,6 +71,21 @@ Thumbs.db
 /data/profile_copy.txt
 /deploy-steps.txt
 /setup-brand-pdfs.ps1
+/$out
+/.progress-*.md
+/PROGRESS.md
+/docs/DEPLOY.md
+
+# Cursor local config (AI rules, skills — private)
+/.cursor/
+
+# Local utility scripts
+/scripts/
+
+# Scratch notes
+/cleanup-branch.txt
+/push-fix.txt
+/_tracked_files.txt
 
 # Python caches
 /.patches/__pycache__/

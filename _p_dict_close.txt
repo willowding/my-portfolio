@@ -1,8 +1,0 @@
-﻿WORD_MAP closes at L1187: };
-Context around:
-     L1184: "8088":{kw:"trip",zh:"绊倒",i12:null,i18:null,i25:"8088trip.png"},
-     L1185: "8089":{kw:"woke",zh:"醒",i12:null,i18:null,i25:"8089woke.png"},
-     L1186: "8090":{kw:"dream",zh:"梦",i12:null,i18:null,i25:"8090dream.png"},
-  >> L1187: };
-     L1188: const sb = createClient("https://ptxkeywyujftzusjvrrh.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0eGtleXd5dWpmdHp1c2p2cnJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg
-     L1189: async function fetchAllRows(buildQuery){
