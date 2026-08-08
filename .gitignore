@@ -87,10 +87,16 @@ Thumbs.db
 /push-fix.txt
 /_tracked_files.txt
 
+# Private resume drafts (personal career doc, not site content)
+/_resume_drafts.md
+/resume_drafts.md
+
+# Personal analytics exports — real names + raw numbers; never commit
+/data/picreview_stats.json
+
 # Python caches
 /.patches/__pycache__/
 *.pyc
 
 # Standalone Next.js output
 /.next/standalone/
-
