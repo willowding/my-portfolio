@@ -18,12 +18,23 @@ export const metadata: Metadata = {
 
 export default async function PicreviewPage() {
   const dauPath = path.join(process.cwd(), "data", "picreview-dau.json");
-  const dauRaw = await fs.readFile(dauPath, "utf-8");
-  const dau = JSON.parse(dauRaw.replace(/^\uFEFF/, "")) as DauPoint[];
-
   const storagePath = path.join(process.cwd(), "data", "picreview-storage-raw.json");
-  const storageRaw = await fs.readFile(storagePath, "utf-8");
-  const storageRows = JSON.parse(storageRaw.replace(/^\uFEFF/, "")) as Array<{ d: string; c: number }>;
+
+  const dau: DauPoint[] = await fs
+    .readFile(dauPath, "utf-8")
+    .then((raw) => JSON.parse(raw.replace(/^\uFEFF/, "")) as DauPoint[])
+    .catch(() => [] as DauPoint[]);
+
+  const storageRows = await fs
+    .readFile(storagePath, "utf-8")
+    .then(
+      (raw) =>
+        JSON.parse(raw.replace(/^\uFEFF/, "")) as Array<{
+          d: string;
+          c: number;
+        }>,
+    )
+    .catch(() => [] as Array<{ d: string; c: number }>);
 
   const dailySum = new Map<string, number>();
   for (const r of storageRows) {

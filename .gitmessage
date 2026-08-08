@@ -1,0 +1,20 @@
+# <type>: <subject>  (English, ≤ 50 chars)
+
+# Type:
+#   feat     new feature
+#   fix      bug fix
+#   refactor code change that neither fixes a bug nor adds a feature
+#   style    formatting / whitespace / CSS only
+#   docs     documentation only
+#   chore    tooling / config / deps
+#
+# Subject rules:
+#   - imperative mood ("add", not "added")
+#   - no trailing period
+#   - lowercase after the colon
+#
+# Body (optional): explain WHY, not WHAT. Wrap at 72 chars.
+
+# Footer (optional):
+#   Refs: #issue
+#   Co-authored-by: Name <email>

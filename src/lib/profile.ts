@@ -180,12 +180,24 @@ export interface Award {
 
 export function getProfile(): Profile {
   const file = path.join(process.cwd(), "data", "profile.yaml");
-  const raw = fs.readFileSync(file, "utf8");
-  return yaml.load(raw) as Profile;
+  try {
+    const raw = fs.readFileSync(file, "utf8");
+    return yaml.load(raw) as Profile;
+  } catch (err) {
+    // Vercel serverless may not include `data/profile.yaml` in the bundle
+    // (Next.js 15 file tracing only tracks statically-imported modules).
+    // Fall back to an empty profile so callers don't crash; pages should
+    // tolerate `projects: []` and render the rest of the page normally.
+    console.warn("[profile] failed to load data/profile.yaml:", err);
+    return { projects: [] } as Profile;
+  }
 }
 
 /**
  * Returns the 1-based index and total count of a project within the works list.
+ * Match is done by `name` field.
+ * Returns null if not found.
+ */
  * Match is done by `name` field.
  * Returns null if not found.
  */
