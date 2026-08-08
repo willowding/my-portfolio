@@ -47,7 +47,7 @@ export default async function PicreviewPage() {
     return { date, storedCount: running };
   });
 
-  const profile = getProfile();
+  const profile = await getProfile();
   const labelInfo = getProjectLabel(profile.projects, picreview.name);
   const projectLabel = labelInfo
     ? `${String(labelInfo.index).padStart(2, "0")} / ${String(labelInfo.total).padStart(2, "0")}`

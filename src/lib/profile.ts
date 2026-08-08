@@ -1,5 +1,5 @@
 // Profile loader — server-side, reads data/profile.yaml at build time
-import fs from "node:fs";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import yaml from "js-yaml";
 
@@ -178,10 +178,10 @@ export interface Award {
   note_en: string;
 }
 
-export function getProfile(): Profile {
+export async function getProfile(): Promise<Profile> {
   const file = path.join(process.cwd(), "data", "profile.yaml");
   try {
-    const raw = fs.readFileSync(file, "utf8");
+    const raw = await readFile(file, "utf8");
     return yaml.load(raw) as Profile;
   } catch (err) {
     // Vercel serverless may not include `data/profile.yaml` in the bundle
