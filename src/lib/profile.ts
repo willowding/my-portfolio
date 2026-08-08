@@ -188,7 +188,7 @@ export function getProfile(): Profile {
     // (Next.js 15 file tracing only tracks statically-imported modules).
     // Fall back to an empty profile so callers don't crash.
     console.warn("[profile] failed to load data/profile.yaml:", err);
-    return { projects: [] } as Profile;
+    return { projects: [] } as unknown as Profile;
   }
 }
 
