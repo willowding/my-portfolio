@@ -52,7 +52,7 @@ Thumbs.db
 *.log
 
 # Heavy brand assets (PDFs > 5MB) — keep on local / CDN, not git
-/public/brands/
+# (brands folder is now back — small PDFs ship via git)
 /public/frame-preview/
 
 # Dev / scratch artifacts — never ship
