@@ -1,6 +1,0 @@
-@echo off
-cd /d C:\cursor\willowding-portfolio
-echo Staging files...
-git add -A
-echo Committing...
-git commit -m "compress PDFs and fix iframe headers"

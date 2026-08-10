@@ -115,7 +115,7 @@
 
 .pr-loop-frame-outer {
   width: 100%;
-  padding-bottom: 56.25%;
+  aspect-ratio: 16 / 9;
   position: relative;
   overflow: hidden;
   border: 1px solid var(--color-rule);
@@ -128,9 +128,15 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  transform: scale(calc(100vw / 1280));
-  transform-origin: top left;
   border: none;
+  display: block;
+}
+
+@supports not (aspect-ratio: 16 / 9) {
+  .pr-loop-frame-outer {
+    padding-bottom: 56.25%;
+    height: 0;
+  }
 }
 
 .pr-loop-note {
@@ -143,22 +149,6 @@
   text-align: center;
   max-width: 100%;
   width: 100%;
-}
-
-@media (max-width: 1280px) {
-  .pr-loop-frame {
-    transform: scale(calc(min(100vw, 1280px) / 1280));
-  }
-}
-
-@media (max-width: 768px) {
-  .pr-loop-frame {
-    transform: scale(calc(min(100vw, 1280px) / 1280));
-  }
-  .pr-loop-note {
-    font-size: 0.72rem;
-    letter-spacing: 0.03em;
-  }
 }
 
 .pr-features-flow {
