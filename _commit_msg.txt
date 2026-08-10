@@ -1,0 +1,6 @@
+fix: compress brand PDFs + fix iframe X-Frame-Options conflict
+
+- compress leadjoy-brand-guide.pdf: 41.4MB -> 3.4MB (under Vercel 4.5MB limit)
+- compress leadjoy-company-presentation-2026.pdf: 8.78MB -> 6.9MB
+- remove global X-Frame-Options DENY, keep SAMEORIGIN only for /demo/ paths
+  so PicReview demo iframe can embed correctly on portfolio pages
